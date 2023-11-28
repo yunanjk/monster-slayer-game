@@ -16,6 +16,12 @@
           <div class="healthbar__value" :style="playerBarStyles"></div>
         </div>
       </section>
+      <section v-if="winner" class="container">
+        <h2>Game Over!</h2>
+        <h3 v-if="winner === 'monster'">You Lost!</h3>
+        <h3 v-else-if="winner === 'player'">You Won!</h3>
+        <h3 v-else>It's a draw!</h3>
+      </section>
       <section id="controls">
         <button @click="attackMonster">ATTACK</button>
         <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
@@ -41,21 +47,43 @@ export default {
     return {
       playerHealth: 100,
       monsterHealth: 100,
-      currentRound: 0
+      currentRound: 0,
+      winner: null
+    }
+  },
+  watch: {
+    playerHealth(value) {
+      if(value <= 0 && this.monsterHealth <= 0) {
+        // 무승부
+        this.winner = "draw";
+      } else if(value <= 0) {
+        // 플레이어 패
+        this.winner = "monster";
+      }
+    },
+    monsterHealth(value) {
+      if(value <= 0 && this.playerHealth <= 0) {
+        // 무승부
+        this.winner = "draw";
+      } else if(value <= 0) {
+        // 몬스터 패
+        this.winner = "player";
+      }
     }
   },
   methods: {
     attackMonster() { 
       this.currentRound++;
 
-      // (플레이어 -> 몬스터) 공격시 몬스터 피해량
+      // (플레이어 -> 몬스터) 공격시 몬스터 체력 피해량
       // 최솟값 5, 최댓값 12
       const attackValue = Math.floor(Math.random() * (12 - 5)) + 5;
       this.monsterHealth -= attackValue;
+
       this.attackPlayer();
     },
     attackPlayer() {
-      // (몬스터 -> 플레이어) 공격시 플레이어 피해량
+      // (몬스터 -> 플레이어) 공격시 플레이어 체력 피해량
       // 최솟값 8, 최댓값 15
       const attackValue = Math.floor(Math.random() * (15 - 8)) + 8;
       this.playerHealth -= attackValue;
@@ -63,25 +91,27 @@ export default {
     specialAttackMonster() { // currentRound가 3의 배수일 때만 사용 가능
       this.currentRound++;
 
-      // (플레이어 -> 몬스터) 특수 공격시 몬스터 피해량
+      // (플레이어 -> 몬스터) 특수 공격시 몬스터 체력 피해량
       // 최솟값 10, 최댓값 25
       const attackValue = Math.floor(Math.random() * (25 - 10)) + 10;
       this.monsterHealth -= attackValue;
+
       this.attackPlayer();
     },
     healPlayer() {
       this.currentRound++;
 
-      // 플레이어 heal 추가량
+      // 플레이어 체력 추가량
       // 최솟값 8, 최댓값 20
       const healValue = Math.floor(Math.random() * (20 - 8)) + 8;
 
-      // 플레이어 health 100 초과 불가능
+      // 플레이어 체력 100 초과 불가능
       if(this.playerHealth + healValue > 100) {
         this.playerHealth = 100;
       } else {
         this.playerHealth += healValue;
       }
+
       this.attackPlayer();
     }
   },
