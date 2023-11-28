@@ -7,17 +7,17 @@
       <section id="monster" class="container">
         <h2>Monster Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div class="healthbar__value" :style="monsterBarStyles"></div>
         </div>
       </section>
       <section id="player" class="container">
         <h2>Your Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div class="healthbar__value" :style="playerBarStyles"></div>
         </div>
       </section>
       <section id="controls">
-        <button>ATTACK</button>
+        <button @click="attackMonster">ATTACK</button>
         <button>SPECIAL ATTACK</button>
         <button>HEAL</button>
         <button>SURRENDER</button>
@@ -56,6 +56,14 @@ export default {
       // 최솟값 8, 최댓값 15
       const attackValue = Math.floor(Math.random() * (15 - 8)) + 8;
       this.playerHealth -= attackValue;
+    }
+  },
+  computed: {
+    monsterBarStyles() {
+      return {width: this.monsterHealth + '%'}
+    },
+    playerBarStyles() {
+      return {width: this.playerHealth + '%'}
     }
   }
 }
