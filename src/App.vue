@@ -31,7 +31,16 @@
       </section>
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <ul>
+          <li v-for="(logMessage, index) in logMessages" :key="index">
+            <!-- {{ logMessage.actionBy }} - {{ logMessage.actionType }} - {{ logMessage.actionValue }} -->
+            <span :class="{'log--player': logMessage.actionBy === 'player', 'log--monster': logMessage.actionBy === 'monster'}">
+              {{ logMessage.actionBy === "player" ? "Player" : "Monster" }}
+            </span>
+            <span v-if="logMessage.actionType === 'heal'"> heals himself for <span class="log--heal">{{ logMessage.actionValue }}</span></span>
+            <span v-else> attacks and deals <span class="log--damage">{{ logMessage.actionValue }}</span></span>
+          </li>
+        </ul>
       </section>
     </div>
   </body>
@@ -49,7 +58,8 @@ export default {
       playerHealth: 100,
       monsterHealth: 100,
       currentRound: 0,
-      winner: null
+      winner: null,
+      logMessages: []
     }
   },
   watch: {
@@ -81,6 +91,7 @@ export default {
       const attackValue = Math.floor(Math.random() * (12 - 5)) + 5;
       this.monsterHealth -= attackValue;
 
+      this.addLogMessage("player", "attack", attackValue);
       this.attackPlayer();
     },
     attackPlayer() {
@@ -88,6 +99,8 @@ export default {
       // 최솟값 8, 최댓값 15
       const attackValue = Math.floor(Math.random() * (15 - 8)) + 8;
       this.playerHealth -= attackValue;
+
+      this.addLogMessage("monster", "attack", attackValue);
     },
     specialAttackMonster() { // currentRound가 3의 배수일 때만 사용 가능
       this.currentRound++;
@@ -97,6 +110,7 @@ export default {
       const attackValue = Math.floor(Math.random() * (25 - 10)) + 10;
       this.monsterHealth -= attackValue;
 
+      this.addLogMessage("player", "special-attack", attackValue);
       this.attackPlayer();
     },
     healPlayer() {
@@ -113,6 +127,7 @@ export default {
         this.playerHealth += healValue;
       }
 
+      this.addLogMessage("player", "heal", healValue);
       this.attackPlayer();
     },
     startGame() {
@@ -120,11 +135,21 @@ export default {
       this.playerHealth = 100,
       this.monsterHealth = 100,
       this.currentRound = 0,
-      this.winner = null
+      this.winner = null,
+      this.logMessages = []
     },
     surrender() {
       // 플레이어가 항복하므로 승자는 몬스터
       this.winner = "monster";
+    },
+    addLogMessage(who, what, value) {
+      // .push()는 배열의 맨 마지막에 새로운 항목 추가
+      // .unshift()는 배열의 맨 처음에 새로운 항목 추가
+      this.logMessages.unshift({
+        actionBy: who,
+        actionType: what,
+        actionValue: value
+      });
     }
   },
   computed: {
