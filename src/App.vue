@@ -19,7 +19,7 @@
       <section id="controls">
         <button @click="attackMonster">ATTACK</button>
         <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
-        <button>HEAL</button>
+        <button @click="healPlayer">HEAL</button>
         <button>SURRENDER</button>
       </section>
       <section id="log" class="container">
@@ -69,6 +69,21 @@ export default {
       this.monsterHealth -= attackValue;
       this.attackPlayer();
     },
+    healPlayer() {
+      this.currentRound++;
+
+      // 플레이어 heal 추가량
+      // 최솟값 8, 최댓값 20
+      const healValue = Math.floor(Math.random() * (20 - 8)) + 8;
+
+      // 플레이어 health 100 초과 불가능
+      if(this.playerHealth + healValue > 100) {
+        this.playerHealth = 100;
+      } else {
+        this.playerHealth += healValue;
+      }
+      this.attackPlayer();
+    }
   },
   computed: {
     monsterBarStyles() {
