@@ -36,6 +36,27 @@ export default {
   name: 'App',
   components: {
     
+  },
+  data() {
+    return {
+      playerHealth: 100,
+      monsterHealth: 100,
+    }
+  },
+  methods: {
+    attackMonster() { 
+      // 피해량
+      // 최솟값 5, 최댓값 12
+      const attackValue = Math.floor(Math.random() * (12 - 5)) + 5;
+      this.monsterHealth -= attackValue;
+      this.attackPlayer();
+    },
+    attackPlayer() {
+      // 피해량
+      // 최솟값 8, 최댓값 15
+      const attackValue = Math.floor(Math.random() * (15 - 8)) + 8;
+      this.playerHealth -= attackValue;
+    }
   }
 }
 </script>
