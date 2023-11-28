@@ -21,12 +21,13 @@
         <h3 v-if="winner === 'monster'">You Lost!</h3>
         <h3 v-else-if="winner === 'player'">You Won!</h3>
         <h3 v-else>It's a draw!</h3>
+        <button @click="startGame">Start New Game</button>
       </section>
-      <section id="controls">
+      <section v-else id="controls">
         <button @click="attackMonster">ATTACK</button>
         <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
         <button @click="healPlayer">HEAL</button>
-        <button>SURRENDER</button>
+        <button @click="surrender">SURRENDER</button>
       </section>
       <section id="log" class="container">
         <h2>Battle Log</h2>
@@ -113,14 +114,31 @@ export default {
       }
 
       this.attackPlayer();
+    },
+    startGame() {
+      // 게임 재시작 위해 모든 데이터값을 초기값으로 다시 셋팅
+      this.playerHealth = 100,
+      this.monsterHealth = 100,
+      this.currentRound = 0,
+      this.winner = null
+    },
+    surrender() {
+      // 플레이어가 항복하므로 승자는 몬스터
+      this.winner = "monster";
     }
   },
   computed: {
     monsterBarStyles() {
-      return {width: this.monsterHealth + '%'}
+      if(this.monsterHealth < 0) {
+        return {width: '0%'};
+      }
+      return {width: this.monsterHealth + '%'};
     },
     playerBarStyles() {
-      return {width: this.playerHealth + '%'}
+      if(this.playerHealth < 0) {
+        return {width: '0%'};
+      }
+      return {width: this.playerHealth + '%'};
     },
     mayUseSpecialAttack() {
       return this.currentRound % 3 !== 0;
