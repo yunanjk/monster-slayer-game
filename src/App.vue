@@ -18,7 +18,7 @@
       </section>
       <section id="controls">
         <button @click="attackMonster">ATTACK</button>
-        <button>SPECIAL ATTACK</button>
+        <button :disabled="mayUseSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
         <button>HEAL</button>
         <button>SURRENDER</button>
       </section>
@@ -41,22 +41,34 @@ export default {
     return {
       playerHealth: 100,
       monsterHealth: 100,
+      currentRound: 0
     }
   },
   methods: {
     attackMonster() { 
-      // 피해량
+      this.currentRound++;
+
+      // (플레이어 -> 몬스터) 공격시 몬스터 피해량
       // 최솟값 5, 최댓값 12
       const attackValue = Math.floor(Math.random() * (12 - 5)) + 5;
       this.monsterHealth -= attackValue;
       this.attackPlayer();
     },
     attackPlayer() {
-      // 피해량
+      // (몬스터 -> 플레이어) 공격시 플레이어 피해량
       // 최솟값 8, 최댓값 15
       const attackValue = Math.floor(Math.random() * (15 - 8)) + 8;
       this.playerHealth -= attackValue;
-    }
+    },
+    specialAttackMonster() { // currentRound가 3의 배수일 때만 사용 가능
+      this.currentRound++;
+
+      // (플레이어 -> 몬스터) 특수 공격시 몬스터 피해량
+      // 최솟값 10, 최댓값 25
+      const attackValue = Math.floor(Math.random() * (25 - 10)) + 10;
+      this.monsterHealth -= attackValue;
+      this.attackPlayer();
+    },
   },
   computed: {
     monsterBarStyles() {
@@ -64,6 +76,9 @@ export default {
     },
     playerBarStyles() {
       return {width: this.playerHealth + '%'}
+    },
+    mayUseSpecialAttack() {
+      return this.currentRound % 3 !== 0;
     }
   }
 }
